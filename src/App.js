@@ -21,25 +21,22 @@ const Title = ({usersCount}) => {
   );
 }
 
-// const UserForm = ({changeGroup}) => {
-//   // Input Tracker
-//   let input;
-//   // Return JSX
-//   return (
-//     <form onSubmit={(e) => {
-//         e.preventDefault();
-//         changeGroup(input.value);
-//         input.value = '';
-//       }}>
-//       <input className="" ref={node => {
-//         input = node;
-//       }} />
-//       <br />
-//     </form>
-//   );
-// };
+class SearchBar extends React.Component {
+  handleChange() {
+    this.props.onUserInput(this.refs.filterTextInput.value);
+    //console.log(this.refs.filterTextInput.value);
+  }
+  render() {
+    return (
+      <div>
+        <input type="text" placeholder="Search..." value={this.props.filterText} ref="filterTextInput" onChange={this.handleChange.bind(this)}/>
+      </div>
 
-const User = ({users, remove}) => {
+    );
+  }
+}
+
+const User = ({users}) => {
   // Each User
   return (
     <tr>
@@ -47,31 +44,67 @@ const User = ({users, remove}) => {
       <td>{users.userLN}</td>
       <td>{users.region}</td>
       <td>{users.city}</td>
-      <td><a href="#" className="" onClick={() => {remove(users.id)}}>{users.group}</a></td>
+      <td><a href="#" className="">{users.group}</a></td>
     </tr>
     );
 }
 
-const UserList = ({userList, remove}) => {
-  // Map through the userList
-  const usersNode = userList.map((users) => {
-    return (<User users={users} key={users.id} remove={remove}/>)
-  });
-  return (<table className="">
-            <thead>
-            <tr>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Region</th>
-              <th>City</th>
-              <th>Group</th>
-            </tr>
-            </thead>
-            <tbody>
-            {usersNode}
-            </tbody>
-          </table>);
+// const UserList = ({userList, filterText}) => {
+//   var filterText = this.props.filterText;
+//   // Map through the userList
+//   const usersNode = userList.map((users) => {
+//     if (usersNode.userFN.indexOf(filterText) === -1) {
+//       return;
+//     }
+//     return (<User users={users} key={users.id}/>)
+//   });
+//   return (<table className="">
+//             <thead>
+//             <tr>
+//               <th>First Name</th>
+//               <th>Last Name</th>
+//               <th>Region</th>
+//               <th>City</th>
+//               <th>Group</th>
+//             </tr>
+//             </thead>
+//             <tbody>
+//             {usersNode}
+//             </tbody>
+//           </table>);
+// }
+
+
+class UserList extends React.Component {
+  render(){
+    var filterText = this.props.filterText;
+    var userList = this.props.userList;
+    // Map through the userList
+    const usersNode = userList.map((users) => {
+      if (users.userLN.indexOf(filterText) === -1) {
+        return;
+      }
+      return (<User users={users} key={users.id}/>)
+    });
+    return (
+      <table className="">
+        <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Region</th>
+          <th>City</th>
+          <th>Group</th>
+        </tr>
+        </thead>
+        <tbody>
+        {usersNode}
+        </tbody>
+      </table>);  
+  }
+
 }
+
 
 // Contaner Component
 // User Id
@@ -84,6 +117,7 @@ class UserApp extends React.Component{
     this.state = {
       data: []
     }
+    this.state.filterText = "";
     this.apiUrl = 'https://59947c5fd297ba0011da1b34.mockapi.io/api/toDo/users'
   }
   // Lifecycle method
@@ -95,40 +129,17 @@ class UserApp extends React.Component{
         this.setState({data:res.data});
       });
   }
-  // Add users handler
-  // changeGroup(val){
-  //   // Assemble data
-  //   const users = {text: val}
-  //   // Update data
-  //   axios.post(this.apiUrl, users)
-  //      .then((res) => {
-  //         this.state.data.push(res.data);
-  //         this.setState({data: this.state.data});
-  //      });
-  // }
-
-  // Handle remove
-  handleRemove(id){
-    // Filter all userList except the one to be removed
-    const remainder = this.state.data.filter((users) => {
-      if(users.id !== id) return users;
-    });
-    // Update state with filter
-    axios.delete(this.apiUrl+'/'+id)
-      .then((res) => {
-        this.setState({data: remainder});
-      })
-  }
+  handleUserInput(filterText) {
+    this.setState({filterText: filterText});
+  };
 
   render(){
     // Render JSX
     return (
       <div>
         <Title usersCount={this.state.data.length}/>
-        <UserList
-          userList={this.state.data}
-          remove={this.handleRemove.bind(this)}
-        />
+        <SearchBar filterText={this.state.filterText} onUserInput={this.handleUserInput.bind(this)}/>
+        <UserList userList={this.state.data} filterText={this.state.filterText} />
       </div>
     );
   }
