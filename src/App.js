@@ -36,6 +36,21 @@ class SearchBar extends React.Component {
   }
 }
 
+class SelectGroup extends React.Component {
+  handleChange() {
+    this.props.onGroupInput(this.refs.filterGroupInput.value);
+    //console.log(this.refs.filterGroupInput.value);
+  }
+  render() {
+    return (
+      <div className="search-bar">
+        <input type="text" placeholder="Search by group..." value={this.props.filterGroup} ref="filterGroupInput" onChange={this.handleChange.bind(this)}/>
+      </div>
+
+    );
+  }
+}
+
 //<input value={users.region}></input>
 
 class EditableCell extends React.Component {
@@ -87,10 +102,14 @@ class UserList extends React.Component {
   render(){
     var onProductTableUpdate = this.props.onProductTableUpdate;
     var filterText = this.props.filterText;
+    var filterGroup = this.props.filterGroup;
     var userList = this.props.userList;
     // Map through the userList
     const usersNode = userList.map((users) => {
       if (users.userLN.indexOf(filterText) === -1) {
+        return;
+      }
+      if (users.group.indexOf(filterGroup) === -1) {
         return;
       }
       return (<User onProductTableUpdate={onProductTableUpdate} users={users} key={users.id}/>)
@@ -126,6 +145,7 @@ class UserApp extends React.Component{
       data: []
     }
     this.state.filterText = "";
+    this.state.filterGroup = "";
     this.apiUrl = 'https://59947c5fd297ba0011da1b34.mockapi.io/api/toDo/users'
   }
   // Lifecycle method
@@ -139,6 +159,9 @@ class UserApp extends React.Component{
   }
   handleUserInput(filterText) {
     this.setState({filterText: filterText});
+  };
+  handleGroupInput(filterGroup) {
+    this.setState({filterGroup: filterGroup});
   };
 
   handleProductTable(evt) {
@@ -168,7 +191,8 @@ class UserApp extends React.Component{
       <div>
         <Title usersCount={this.state.data.length}/>
         <SearchBar filterText={this.state.filterText} onUserInput={this.handleUserInput.bind(this)}/>
-        <UserList onProductTableUpdate={this.handleProductTable.bind(this)} userList={this.state.data} filterText={this.state.filterText} />
+        <SelectGroup filterGroup={this.state.filterGroup} onGroupInput={this.handleGroupInput.bind(this)}/>
+        <UserList onProductTableUpdate={this.handleProductTable.bind(this)} userList={this.state.data} filterGroup={this.state.filterGroup} filterText={this.state.filterText} />
       </div>
     );
   }
