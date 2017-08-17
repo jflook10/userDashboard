@@ -9,6 +9,9 @@
   height: 150px;
   padding: 20px;
   color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .App-intro {
@@ -20,6 +23,16 @@ h2, form{
   padding: .5rem 1rem;
 }
 
+.search-bar{
+  padding: .5rem 1rem;
+  display: flex;
+}
+
+.search-bar input{
+  padding: .5rem;
+  font-size: 1rem;
+  flex-grow: 1;
+}
 
 table{
   padding: 1rem;
@@ -37,6 +50,7 @@ tr:nth-child(odd){
 }
 tr:nth-child(even){
   background-color: white;
+  border: 1px solid lightgrey;
 }
 
 thead tr:nth-child(1){
@@ -48,16 +62,11 @@ td, th{
   text-align: start;
   display: flex;
   flex-wrap: wrap;
+  align-items: center
+}
+td input{
+  font-size: 1rem;
+  width: 100%;
+
 }
 
-
-
-/*.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}*/
-
-/*@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}*/

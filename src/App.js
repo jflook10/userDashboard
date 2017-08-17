@@ -28,55 +28,64 @@ class SearchBar extends React.Component {
   }
   render() {
     return (
-      <div>
-        <input type="text" placeholder="Search..." value={this.props.filterText} ref="filterTextInput" onChange={this.handleChange.bind(this)}/>
+      <div className="search-bar">
+        <input type="text" placeholder="Search by last name..." value={this.props.filterText} ref="filterTextInput" onChange={this.handleChange.bind(this)}/>
       </div>
 
     );
   }
 }
 
-const User = ({users}) => {
+//<input value={users.region}></input>
+
+class EditableCell extends React.Component {
+  render() {
+    return (
+      <td>
+        <input type="text" name={this.props.cellData.type} id={this.props.cellData.id} value={this.props.cellData.value} onChange={this.props.onProductTableUpdate}/>
+      </td>
+    );
+  }
+}
+
+class NormCell extends React.Component {
+  render() {
+    return (
+      <td>{this.props.cellData.value}</td>
+    );
+  }
+}
+
+class User extends React.Component{
+  render(){
   // Each User
   return (
     <tr>
-      <td>{users.userFN}</td>
-      <td>{users.userLN}</td>
-      <td>{users.region}</td>
-      <td>{users.city}</td>
-      <td><a href="#" className="">{users.group}</a></td>
+      <NormCell cellData={{
+          value: this.props.users.userFN
+        }}/>
+      <NormCell cellData={{
+          value: this.props.users.userLN
+        }}/>
+      <NormCell cellData={{
+          value: this.props.users.city
+        }}/>
+      <NormCell cellData={{
+          value: this.props.users.region
+        }}/>
+      <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
+        type: "group",
+        value: this.props.users.group,
+        id: this.props.users.id
+      }}/>
     </tr>
     );
+  }
 }
-
-// const UserList = ({userList, filterText}) => {
-//   var filterText = this.props.filterText;
-//   // Map through the userList
-//   const usersNode = userList.map((users) => {
-//     if (usersNode.userFN.indexOf(filterText) === -1) {
-//       return;
-//     }
-//     return (<User users={users} key={users.id}/>)
-//   });
-//   return (<table className="">
-//             <thead>
-//             <tr>
-//               <th>First Name</th>
-//               <th>Last Name</th>
-//               <th>Region</th>
-//               <th>City</th>
-//               <th>Group</th>
-//             </tr>
-//             </thead>
-//             <tbody>
-//             {usersNode}
-//             </tbody>
-//           </table>);
-// }
-
 
 class UserList extends React.Component {
   render(){
+    var onProductTableUpdate = this.props.onProductTableUpdate;
     var filterText = this.props.filterText;
     var userList = this.props.userList;
     // Map through the userList
@@ -84,7 +93,7 @@ class UserList extends React.Component {
       if (users.userLN.indexOf(filterText) === -1) {
         return;
       }
-      return (<User users={users} key={users.id}/>)
+      return (<User onProductTableUpdate={onProductTableUpdate} users={users} key={users.id}/>)
     });
     return (
       <table className="">
@@ -92,8 +101,8 @@ class UserList extends React.Component {
         <tr>
           <th>First Name</th>
           <th>Last Name</th>
-          <th>Region</th>
           <th>City</th>
+          <th>Region</th>
           <th>Group</th>
         </tr>
         </thead>
@@ -102,7 +111,6 @@ class UserList extends React.Component {
         </tbody>
       </table>);  
   }
-
 }
 
 
@@ -133,13 +141,34 @@ class UserApp extends React.Component{
     this.setState({filterText: filterText});
   };
 
+  handleProductTable(evt) {
+  var item = {
+    id: evt.target.id,
+    name: evt.target.name,
+    value: evt.target.value
+    };
+    var users = this.state.data.slice();
+    var newUsers = users.map(function(users) {
+
+      for (var key in users) {
+        if (key == item.name && users.id == item.id) {
+          users[key] = item.value;
+
+        }
+      }
+      return users;
+    });
+      this.setState({users:newUsers});
+      console.log(this.state.products);
+  };
+
   render(){
     // Render JSX
     return (
       <div>
         <Title usersCount={this.state.data.length}/>
         <SearchBar filterText={this.state.filterText} onUserInput={this.handleUserInput.bind(this)}/>
-        <UserList userList={this.state.data} filterText={this.state.filterText} />
+        <UserList onProductTableUpdate={this.handleProductTable.bind(this)} userList={this.state.data} filterText={this.state.filterText} />
       </div>
     );
   }
