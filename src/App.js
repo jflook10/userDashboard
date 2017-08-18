@@ -1,7 +1,4 @@
-// import React, { Component } from 'react';
-// import logo from './logo.svg';
 import './App.css';
-
 import React from 'react';
 import { render } from 'react-dom';
 import axios from 'axios';
@@ -24,7 +21,6 @@ const Title = ({usersCount}) => {
 class SearchBar extends React.Component {
   handleChange() {
     this.props.onUserInput(this.refs.filterTextInput.value);
-    //console.log(this.refs.filterTextInput.value);
   }
   render() {
     return (
@@ -101,15 +97,15 @@ class User extends React.Component{
 class UserList extends React.Component {
   render(){
     var onProductTableUpdate = this.props.onProductTableUpdate;
-    var filterText = this.props.filterText;
-    var filterGroup = this.props.filterGroup;
+    var filterText = this.props.filterText.toLowerCase();
+    var filterGroup = this.props.filterGroup.toLowerCase();
     var userList = this.props.userList;
     // Map through the userList
     const usersNode = userList.map((users) => {
-      if (users.userLN.indexOf(filterText) === -1) {
+      if (users.userLN.toLowerCase().indexOf(filterText) === -1) {
         return;
       }
-      if (users.group.indexOf(filterGroup) === -1) {
+      if (users.group.toLowerCase().indexOf(filterGroup) === -1) {
         return;
       }
       return (<User onProductTableUpdate={onProductTableUpdate} users={users} key={users.id}/>)
